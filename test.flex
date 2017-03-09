@@ -13,11 +13,15 @@
 [t|T][o|O][p|P]			return TOP;
 [s|S][i|I][z|Z][e|E]	return SIZE;
 [l|L][o|O][a|A][d|D]	return LOAD;
-[r][a-zA-Z]		  { yylval.l = yytext[1] - 65; return REG; }
-[a-zA-Z0-9]+			return ERROR_TOK;
 "$"						return DOLLAR;
 
+[r][A-Z]		  { yylval.l = yytext[1] - 65; return REG; }
+[r][a-z]		  { yylval.l = yytext[1] - 97; return REG; }
 
+[a-zA-Z0-9]+			return ERROR_TOK;
+
+
+[ \t\v\f]		{ }
 
 "+"						return '+';
 "-"						return '-';

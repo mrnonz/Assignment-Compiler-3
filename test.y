@@ -5,7 +5,10 @@
 #include <stdlib.h>
 
 void yyerror (char const *);
-
+int yylex();
+void push_item(int n);
+int pop_item();
+int power();
 
 typedef struct node {
 	int val;
@@ -86,6 +89,10 @@ command_push:
 	{
 		push_item(temp);
 	}
+	| PUSH DOLLAR REG
+	{
+		push_item(reg_data[$3]);
+	}
 ;
 
 command_pop:
@@ -158,6 +165,9 @@ int yywrap()
 
 int power(int a,int b){
 	int i;
+	if(b == 0){
+		return 1;
+	}
 	for(i = 1;i < b;i++){
 		a *= a;
 	}
