@@ -131,7 +131,7 @@ command_push:
 	}
 	| PUSH DOLLAR REG
 	{
-		push_item(reg_data[$3]);
+		reg_data[$3] = temp;
 	}
 ;
 
