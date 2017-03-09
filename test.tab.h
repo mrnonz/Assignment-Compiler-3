@@ -52,9 +52,10 @@ extern int yydebug;
     PUSH = 262,
     POP = 263,
     ACC = 264,
-    NUMBER = 265,
-    REG = 266,
-    NEG = 267
+    LOAD = 265,
+    NUMBER = 266,
+    REG = 267,
+    NEG = 268
   };
 #endif
 
@@ -67,7 +68,7 @@ union YYSTYPE
 
    int l;
 
-#line 71 "test.tab.h" /* yacc.c:1909  */
+#line 72 "test.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

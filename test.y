@@ -27,7 +27,7 @@ int reg_data[26] = {0};
 %type <l> command_pop
 
 /* Bison declarations.  */
-%token SHOW TOP SIZE DOLLAR PUSH POP ACC;
+%token SHOW TOP SIZE DOLLAR PUSH POP ACC LOAD;
 %token <l> NUMBER;
 %token <l> REG;
 %left '-' '+'
@@ -51,6 +51,7 @@ commands:
 	command_show
 	| command_push
 	| command_pop
+	| command_load
 ;
 
 command_show:
@@ -94,8 +95,19 @@ command_pop:
 	}
 ;
 
+command_load:
+	LOAD DOLLAR REG DOLLAR REG
+	{
+		reg_data[$5] = reg_data[$3];
+	}
+	| LOAD DOLLAR ACC DOLLAR REG
+	{
+		reg_data[$5] = temp;
+	}
+;
 exp:
-  NUMBER             { $$ = $1;         }
+  NUMBER             { $$ = $1;        }
+| DOLLAR REG 		 { $$ = reg_data[$2];	}
 | exp '+' exp        { $$ = $1 + $3; }
 | exp '-' exp        { $$ = $1 - $3;      }
 | exp '*' exp        { $$ = $1 * $3;    }
