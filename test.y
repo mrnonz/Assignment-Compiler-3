@@ -33,7 +33,7 @@ int reg_data[26] = {0};
 %token <l> NUMBER;
 %token <l> REG;
 %left '-' '+'
-%left '*' '/' '\'
+%left '*' '/' '\\'
 %precedence NEG   /* negation--unary minus */
 %right '^'        /* exponentiation */
 %% /* The grammar follows.  */
@@ -47,11 +47,51 @@ line:
   '\n'
 | exp '\n' {temp = $1; printf("= %d\n",temp);}
 | commands '\n'
-| err '\n'
+| error_handle '\n'
+;
+
+error_handle:
+	err {printf("! Syntax Error\n");}
+	| readonly_error
+	| push_error
+	| pop_error
+;
+
+readonly_error:
+	LOAD DOLLAR readonly DOLLAR REG {printf("! Readonly Error\n");}
+	| LOAD DOLLAR REG DOLLAR readonly {printf("! Readonly Error\n");}
+	| POP DOLLAR readonly {printf("! Readonly Error\n");}
+	| PUSH DOLLAR readonly {printf("! Readonly Error\n");}
+;
+
+readonly:
+	TOP
+	| SIZE
+;
+
+push_error:
+	PUSH DOLLAR err
+	{
+		printf("! Register Error\n");
+	}
+	| PUSH err{
+		printf("! Register Error\n");
+	}
+;
+
+pop_error:
+	POP DOLLAR err
+	{
+		printf("! Register Error\n");
+	}
+	| POP err{
+		printf("! Register Error\n");
+	}
 ;
 
 err:
-	ERROR_TOK {printf("! Syntax Error\n");}
+	%empty
+	| err ERROR_TOK
 ;
 
 commands:
@@ -124,7 +164,7 @@ exp:
 | exp '-' exp        { $$ = $1 - $3;      }
 | exp '*' exp        { $$ = $1 * $3;    }
 | exp '/' exp        { $$ = $1 / $3;     }
-| exp '\' exp        { $$ = $1 % $3;     }
+| exp '\\' exp        { $$ = $1 % $3;     }
 | '-' exp  %prec NEG { $$ = -$2;          }
 | exp '^' exp        { $$ = power($1, $3);}
 | '(' exp ')'        { $$ = $2;           }
@@ -156,7 +196,7 @@ int pop_item(){
 
 void yyerror(const char *str)
 {
-    fprintf(stderr,"error: %s\n",str);
+    //fprintf(stderr,"error: %s\n",str);
 }
 
 int yywrap()
