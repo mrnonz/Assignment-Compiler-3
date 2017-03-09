@@ -30,10 +30,10 @@ int reg_data[26] = {0};
 
 /* Bison declarations.  */
 %token SHOW TOP SIZE DOLLAR PUSH POP ACC LOAD ERROR_TOK;
-%token <l> NUMBER; 
+%token <l> NUMBER;
 %token <l> REG;
 %left '-' '+'
-%left '*' '/'
+%left '*' '/' '\'
 %precedence NEG   /* negation--unary minus */
 %right '^'        /* exponentiation */
 %% /* The grammar follows.  */
@@ -62,7 +62,7 @@ commands:
 ;
 
 command_show:
-	SHOW DOLLAR TOP 	
+	SHOW DOLLAR TOP
 	{
 		if(top_stack!= NULL){
 			printf("= %d\n",top_stack->val);
@@ -124,6 +124,7 @@ exp:
 | exp '-' exp        { $$ = $1 - $3;      }
 | exp '*' exp        { $$ = $1 * $3;    }
 | exp '/' exp        { $$ = $1 / $3;     }
+| exp '\' exp        { $$ = $1 % $3;     }
 | '-' exp  %prec NEG { $$ = -$2;          }
 | exp '^' exp        { $$ = power($1, $3);}
 | '(' exp ')'        { $$ = $2;           }
@@ -157,11 +158,11 @@ void yyerror(const char *str)
 {
     fprintf(stderr,"error: %s\n",str);
 }
- 
+
 int yywrap()
 {
     return 1;
-} 
+}
 
 int power(int a,int b){
 	int i;
@@ -172,12 +173,10 @@ int power(int a,int b){
 		a *= a;
 	}
 	return a;
-} 
+}
 
 int main()
 {
 	printf("> ");
     return yyparse ();
-} 
-
-
+}
