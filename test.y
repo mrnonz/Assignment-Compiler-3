@@ -1,0 +1,147 @@
+%{
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
+
+void yyerror (char const *);
+
+
+typedef struct node {
+	int val;
+	struct node *next;
+} acc_stack;
+
+acc_stack *top_stack = NULL;
+int stack_size = 0;
+int temp = 0;
+int reg_data[26] = {0};
+%}
+
+%union {
+   int l;
+}
+
+%type <l> exp
+%type <l> command_pop
+
+/* Bison declarations.  */
+%token SHOW TOP SIZE DOLLAR PUSH POP ACC;
+%token <l> NUMBER;
+%token <l> REG;
+%left '-' '+'
+%left '*' '/'
+%precedence NEG   /* negation--unary minus */
+%right '^'        /* exponentiation */
+%% /* The grammar follows.  */
+
+input:
+  %empty
+| input line
+;
+
+line:
+  '\n'
+| exp '\n' {temp = $1;}
+| commands '\n'
+;
+
+commands:
+	command_show
+	| command_push
+	| command_pop
+;
+
+command_show:
+	SHOW DOLLAR TOP 	
+	{
+		if(top_stack!= NULL){
+			printf("%d\n",top_stack->val);
+		}else{
+			printf("Stack is Empty\n");
+		}
+	}
+	| SHOW DOLLAR SIZE
+	{
+		printf("Stack size is %d\n",stack_size);
+	}
+	| SHOW DOLLAR REG
+	{
+		printf("%d\n",reg_data[$3]);
+	}
+	| SHOW DOLLAR ACC
+	{
+		printf("%d\n",temp);
+	}
+;
+
+command_push:
+	PUSH DOLLAR ACC
+	{
+		push_item(temp);
+	}
+;
+
+command_pop:
+	POP DOLLAR REG
+	{
+		if(top_stack!= NULL){
+			reg_data[$3] = pop_item();
+		}else{
+			printf("Stack is Empty\n");
+		}
+	}
+;
+
+exp:
+  NUMBER             { $$ = $1;         }
+| exp '+' exp        { $$ = $1 + $3; }
+| exp '-' exp        { $$ = $1 - $3;      }
+| exp '*' exp        { $$ = $1 * $3;    }
+| exp '/' exp        { $$ = $1 / $3;     }
+| '-' exp  %prec NEG { $$ = -$2;          }
+| exp '^' exp        { $$ = pow ($1, $3);}
+| '(' exp ')'        { $$ = $2;           }
+;
+
+%%
+
+void push_item(int n){
+	acc_stack *new_node;
+	new_node = malloc(sizeof(acc_stack));
+
+	new_node->val = n;
+	new_node->next = top_stack;
+	top_stack = new_node;
+	stack_size++;
+}
+
+int pop_item(){
+	int tmp;
+	acc_stack *tmp_node = top_stack;
+
+	tmp = top_stack->val;
+	top_stack = top_stack->next;
+	free(tmp_node);
+	stack_size--;
+
+	return tmp;
+}
+
+void yyerror(const char *str)
+{
+        fprintf(stderr,"error: %s\n",str);
+}
+ 
+int yywrap()
+{
+        return 1;
+} 
+  
+int main()
+{
+        return yyparse ();
+} 
+
+
