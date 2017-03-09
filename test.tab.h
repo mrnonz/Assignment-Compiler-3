@@ -53,9 +53,10 @@ extern int yydebug;
     POP = 263,
     ACC = 264,
     LOAD = 265,
-    NUMBER = 266,
-    REG = 267,
-    NEG = 268
+    ERROR_TOK = 266,
+    NUMBER = 267,
+    REG = 268,
+    NEG = 269
   };
 #endif
 
@@ -64,11 +65,11 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 22 "test.y" /* yacc.c:1909  */
+#line 21 "test.y" /* yacc.c:1909  */
 
    int l;
 
-#line 72 "test.tab.h" /* yacc.c:1909  */
+#line 73 "test.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
