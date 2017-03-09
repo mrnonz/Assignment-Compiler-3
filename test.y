@@ -1,6 +1,5 @@
 %{
 #include <stdio.h>
-#include <math.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -27,7 +26,7 @@ int reg_data[26] = {0};
 %type <l> command_pop
 
 /* Bison declarations.  */
-%token SHOW TOP SIZE DOLLAR PUSH POP ACC LOAD;
+%token SHOW TOP SIZE DOLLAR PUSH POP ACC LOAD ERROR_TOK;
 %token <l> NUMBER;
 %token <l> REG;
 %left '-' '+'
@@ -38,13 +37,18 @@ int reg_data[26] = {0};
 
 input:
   %empty
-| input line
+| input line {printf("> ");}
 ;
 
 line:
   '\n'
-| exp '\n' {temp = $1;}
+| exp '\n' {temp = $1; printf("= %d\n",temp);}
 | commands '\n'
+| err '\n'
+;
+
+err:
+	ERROR_TOK {printf("! Syntax Error\n");}
 ;
 
 commands:
@@ -58,22 +62,22 @@ command_show:
 	SHOW DOLLAR TOP
 	{
 		if(top_stack!= NULL){
-			printf("%d\n",top_stack->val);
+			printf("= %d\n",top_stack->val);
 		}else{
-			printf("Stack is Empty\n");
+			printf("! Stack is Empty\n");
 		}
 	}
 	| SHOW DOLLAR SIZE
 	{
-		printf("Stack size is %d\n",stack_size);
+		printf("= %d\n",stack_size);
 	}
 	| SHOW DOLLAR REG
 	{
-		printf("%d\n",reg_data[$3]);
+		printf("= %d\n",reg_data[$3]);
 	}
 	| SHOW DOLLAR ACC
 	{
-		printf("%d\n",temp);
+		printf("= %d\n",temp);
 	}
 ;
 
@@ -90,7 +94,7 @@ command_pop:
 		if(top_stack!= NULL){
 			reg_data[$3] = pop_item();
 		}else{
-			printf("Stack is Empty\n");
+			printf("! Stack is Empty\n");
 		}
 	}
 ;
@@ -105,6 +109,7 @@ command_load:
 		reg_data[$5] = temp;
 	}
 ;
+
 exp:
   NUMBER             { $$ = $1;        }
 | DOLLAR REG 		 { $$ = reg_data[$2];	}
@@ -114,7 +119,7 @@ exp:
 | exp '/' exp        { $$ = $1 / $3;     }
 | exp '\' exp        { $$ = $1 % $3;     }
 | '-' exp  %prec NEG { $$ = -$2;          }
-| exp '^' exp        { $$ = pow ($1, $3);}
+| exp '^' exp        { $$ = power($1, $3);}
 | '(' exp ')'        { $$ = $2;           }
 ;
 
@@ -144,15 +149,24 @@ int pop_item(){
 
 void yyerror(const char *str)
 {
-        fprintf(stderr,"error: %s\n",str);
+    fprintf(stderr,"error: %s\n",str);
 }
 
 int yywrap()
 {
-        return 1;
+    return 1;
+}
+
+int power(int a,int b){
+	int i;
+	for(i = 1;i < b;i++){
+		a *= a;
+	}
+	return a;
 }
 
 int main()
 {
-        return yyparse ();
+	printf("> ");
+    return yyparse ();
 }
