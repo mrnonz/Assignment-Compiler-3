@@ -13,6 +13,9 @@
 [t|T][o|O][p|P]			return TOP;
 [s|S][i|I][z|Z][e|E]	return SIZE;
 [l|L][o|O][a|A][d|D]	return LOAD;
+[a|A][n|N][d|D]			return OP_AND;
+[o|O][r|R]				return OP_OR;
+[n|N][o|O][t|T]			return OP_NOT;
 "$"						return DOLLAR;
 
 [r][A-Z]		  { yylval.l = yytext[1] - 65; return REG; }

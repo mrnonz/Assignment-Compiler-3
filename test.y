@@ -30,6 +30,7 @@ int reg_data[26] = {0};
 
 /* Bison declarations.  */
 %token SHOW TOP SIZE DOLLAR PUSH POP ACC LOAD ERROR_TOK;
+%left OP_AND OP_OR OP_NOT;
 %token <l> NUMBER;
 %token <l> REG;
 %left '-' '+'
@@ -168,6 +169,9 @@ exp:
 | '-' exp  %prec NEG { $$ = -$2;          }
 | exp '^' exp        { $$ = power($1, $3);}
 | '(' exp ')'        { $$ = $2;           }
+| exp OP_AND exp 	{ $$ = $1 & $3;}
+| exp OP_OR exp  	{ $$ = $1 | $3;}
+| OP_NOT exp 		{ $$ = ~$2;}
 ;
 
 %%

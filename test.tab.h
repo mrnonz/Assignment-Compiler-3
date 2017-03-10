@@ -54,9 +54,12 @@ extern int yydebug;
     ACC = 264,
     LOAD = 265,
     ERROR_TOK = 266,
-    NUMBER = 267,
-    REG = 268,
-    NEG = 269
+    OP_AND = 267,
+    OP_OR = 268,
+    OP_NOT = 269,
+    NUMBER = 270,
+    REG = 271,
+    NEG = 272
   };
 #endif
 
@@ -69,7 +72,7 @@ union YYSTYPE
 
    int l;
 
-#line 73 "test.tab.h" /* yacc.c:1909  */
+#line 76 "test.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
