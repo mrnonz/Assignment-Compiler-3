@@ -161,6 +161,7 @@ command_load:
 exp:
   NUMBER             { $$ = $1;        }
 | DOLLAR REG 		 { $$ = reg_data[$2];	}
+| DOLLAR ACC 		 { $$ = temp; }
 | exp '+' exp        { $$ = $1 + $3; }
 | exp '-' exp        { $$ = $1 - $3;      }
 | exp '*' exp        { $$ = $1 * $3;    }
